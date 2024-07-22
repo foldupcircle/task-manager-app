@@ -1,28 +1,30 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 
 interface TaskItemProps {
-  task: {
-    id: string;
-    description: string;
-    completed: boolean;
-  };
-  onToggleTaskCompletion: (taskId: string) => void;
+    task: {
+      id: string;
+      description: string;
+      completed: boolean;
+    };
+    onToggleTaskCompletion: (taskId: string) => void;
+    onDeleteTask: (taskId: string) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleTaskCompletion }) => {
-  return (
-    <View style={styles.taskContainer}>
-      <Checkbox
-        status={task.completed ? 'checked' : 'unchecked'}
-        onPress={() => onToggleTaskCompletion(task.id)}
-      />
-      <Text style={[styles.taskDescription, task.completed && styles.completedTask]}>
-        {task.description}
-      </Text>
-    </View>
-  );
+const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleTaskCompletion, onDeleteTask }) => {
+    return (
+        <View style={styles.taskContainer}>
+        <Checkbox
+            status={task.completed ? 'checked' : 'unchecked'}
+            onPress={() => onToggleTaskCompletion(task.id)}
+        />
+        <Text style={[styles.taskDescription, task.completed && styles.completedTask]}>
+            {task.description}
+        </Text>
+        <Button title="Delete" onPress={() => onDeleteTask(task.id)} />
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({

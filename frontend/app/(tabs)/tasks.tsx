@@ -59,8 +59,14 @@ export default function HomeScreen() {
     saveTasks(updatedTasks);
   };
 
+  const deleteTask = (taskId: string) => {
+    const updatedTasks = tasks.filter(task => task.id !== taskId);
+    setTasks(updatedTasks);
+    saveTasks(updatedTasks);
+  };
+
   const renderItem = ({ item }: { item: Task }) => (
-    <TaskItem task={item} onToggleTaskCompletion={toggleTaskCompletion} />
+    <TaskItem task={item} onToggleTaskCompletion={toggleTaskCompletion} onDeleteTask={deleteTask} />
   );
 
   return (
