@@ -1,68 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { SafeAreaView, FlatList, StyleSheet, Text, View, TextInput, Button } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import TaskItem from '@/components/TaskItem';
+import { TasksContext, Task } from '@/app/(tabs)/TasksProvider';
 
-interface Task {
-  id: string;
-  description: string;
-  completed: boolean;
-}
-
-export default function HomeScreen() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+export default function TasksScreen() {
+  const { tasks, addTask, toggleTaskCompletion, deleteTask } = useContext(TasksContext);
   const [newTaskDescription, setNewTaskDescription] = useState('');
 
-  useEffect(() => {
-    loadTasks();
-  }, []);
-
-  const loadTasks = async () => {
-    try {
-      const savedTasks = await AsyncStorage.getItem('tasks');
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      }
-    } catch (error) {
-      console.error('Failed to load tasks.', error);
-    }
-  };
-
-  const saveTasks = async (tasks: Task[]) => {
-    try {
-      await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
-    } catch (error) {
-      console.error('Failed to save tasks.', error);
-    }
-  };
-
-  const addTask = () => {
+  const handleAddTask = () => {
     if (newTaskDescription.trim() === '') return;
-
-    const newTask = {
-      id: Date.now().toString(),
-      description: newTaskDescription,
-      completed: false,
-    };
-
-    const updatedTasks = [newTask, ...tasks];
-    setTasks(updatedTasks);
-    saveTasks(updatedTasks);
+    addTask(newTaskDescription);
     setNewTaskDescription('');
-  };
-
-  const toggleTaskCompletion = (taskId: string) => {
-    const updatedTasks = tasks.map(task =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
-    setTasks(updatedTasks);
-    saveTasks(updatedTasks);
-  };
-
-  const deleteTask = (taskId: string) => {
-    const updatedTasks = tasks.filter(task => task.id !== taskId);
-    setTasks(updatedTasks);
-    saveTasks(updatedTasks);
   };
 
   const renderItem = ({ item }: { item: Task }) => (
@@ -78,10 +26,10 @@ export default function HomeScreen() {
           value={newTaskDescription}
           onChangeText={setNewTaskDescription}
         />
-        <Button title="Add" onPress={addTask} />
+        <Button title="Add" onPress={handleAddTask} />
       </View>
       <FlatList
-        data={tasks}
+        data={tasks.filter(task => !task.completed)}
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />

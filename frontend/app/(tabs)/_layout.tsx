@@ -4,6 +4,7 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { TasksProvider } from '@/app/(tabs)/TasksProvider';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -29,6 +30,15 @@ export default function TabLayout() {
           title: 'Tasks',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="completed-tasks"
+        options={{
+          title: 'Completed Tasks',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
           ),
         }}
       />

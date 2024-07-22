@@ -24,10 +24,6 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleTaskCompletion, onDel
             checkedColor='black'
             size={30}
         />
-      {/* <CustomCheckbox
-        checked={task.completed}
-        onPress={() => onToggleTaskCompletion(task.id)}
-      /> */}
       <Text style={[styles.taskDescription, task.completed && styles.completedTask]}>
         {task.description}
       </Text>
