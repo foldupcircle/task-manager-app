@@ -4,12 +4,14 @@ import TaskItem from '@/components/TaskItem';
 import { ThemedText } from '@/components/ThemedText';
 import { TasksContext, Task } from '@/app/(tabs)/TasksProvider';
 import { ThemedView } from '@/components/ThemedView';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { Snackbar } from 'react-native-paper';
 
 
 export default function TasksScreen() {
   const { tasks, addTask, toggleTaskCompletion, deleteTask } = useContext(TasksContext);
   const [newTaskDescription, setNewTaskDescription] = useState('');
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+  const [lastToggledTask, setLastToggledTask] = useState<Task>();
 
   const handleAddTask = () => {
     if (newTaskDescription.trim() === '') return;
@@ -17,8 +19,22 @@ export default function TasksScreen() {
     setNewTaskDescription('');
   };
 
+  const handleToggleTaskCompletion = (taskId: string) => {
+    const task = tasks.find(task => task.id === taskId);
+    setLastToggledTask(task);
+    toggleTaskCompletion(taskId);
+    setSnackbarVisible(true);
+  };
+
+  const handleUndo = () => {
+    if (lastToggledTask) {
+      toggleTaskCompletion(lastToggledTask.id);
+      setSnackbarVisible(false);
+    }
+  };
+
   const renderItem = ({ item }: { item: Task }) => (
-    <TaskItem task={item} onToggleTaskCompletion={toggleTaskCompletion} onDeleteTask={deleteTask} />
+    <TaskItem task={item} onToggleTaskCompletion={handleToggleTaskCompletion} onDeleteTask={deleteTask} />
   );
 
   return (
@@ -43,6 +59,17 @@ export default function TasksScreen() {
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        action={{
+          label: 'Undo',
+          onPress: handleUndo,
+        }}
+        duration={3000}
+      >
+        Task marked as completed
+      </Snackbar>
     </SafeAreaView>
     // </ParallaxScrollView>
   );
