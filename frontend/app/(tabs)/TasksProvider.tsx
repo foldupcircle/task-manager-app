@@ -3,15 +3,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Task {
   id: string;
-  description: string;
+  title: string;
   completed: boolean;
+  dueDate: string | null;
+  description: string | null;
 }
 
 interface TasksContextProps {
   tasks: Task[];
-  addTask: (description: string) => void;
+  addTask: (title: string, dueDate: string | null, description: string | null) => void;
   toggleTaskCompletion: (taskId: string) => void;
   deleteTask: (taskId: string) => void;
+  updateTask: (taskId: string, title: string, dueDate: string | null, description: string | null) => void;
 }
 
 const defaultValue: TasksContextProps = {
@@ -19,6 +22,7 @@ const defaultValue: TasksContextProps = {
     addTask: () => {},
     toggleTaskCompletion: () => {},
     deleteTask: () => {},
+    updateTask: () => {},
   };
 
 export const TasksContext = createContext<TasksContextProps>(defaultValue);
@@ -49,34 +53,46 @@ export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const addTask = (description: string) => {
+  const addTask = (title: string, dueDate: string | null, description: string | null) => {
     const newTask = {
       id: Date.now().toString(),
-      description,
+      title,
       completed: false,
-    };
+      dueDate,
+      description,
+  };
 
-    const updatedTasks = [newTask, ...tasks];
+  const updatedTasks = [newTask, ...tasks].sort((a, b) => (a.dueDate && b.dueDate ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime() : 0));
     setTasks(updatedTasks);
     saveTasks(updatedTasks);
   };
 
   const toggleTaskCompletion = (taskId: string) => {
-    const updatedTasks = tasks.map(task =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
+    setTimeout(() => {
+      const updatedTasks = tasks.map(task =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      ).sort((a, b) => (a.dueDate && b.dueDate ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime() : 0));
+      setTasks(updatedTasks);
+      saveTasks(updatedTasks);
+    }, 100);
+  };
+
+  const deleteTask = (taskId: string) => {
+    const updatedTasks = tasks.filter(task => task.id !== taskId).sort((a, b) => (a.dueDate && b.dueDate ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime() : 0));
     setTasks(updatedTasks);
     saveTasks(updatedTasks);
   };
 
-  const deleteTask = (taskId: string) => {
-    const updatedTasks = tasks.filter(task => task.id !== taskId);
+  const updateTask = (taskId: string, title: string, dueDate: string | null, description: string | null) => {
+    const updatedTasks = tasks.map(task =>
+      task.id === taskId ? { ...task, title, dueDate, description } : task
+    ).sort((a, b) => (a.dueDate && b.dueDate ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime() : 0));
     setTasks(updatedTasks);
     saveTasks(updatedTasks);
   };
 
   return (
-    <TasksContext.Provider value={{ tasks, addTask, toggleTaskCompletion, deleteTask }}>
+    <TasksContext.Provider value={{ tasks, addTask, toggleTaskCompletion, deleteTask, updateTask }}>
       {children}
     </TasksContext.Provider>
   );
