@@ -32,7 +32,12 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      
+    </Tabs>
+  );
+}
+// Completed Tasks Tab - No need for it right now
+{/* <Tabs.Screen
         name="completed-tasks"
         options={{
           title: 'Completed Tasks',
@@ -40,7 +45,4 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
           ),
         }}
-      />
-    </Tabs>
-  );
-}
+      /> */}
