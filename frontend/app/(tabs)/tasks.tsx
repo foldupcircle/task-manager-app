@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { SafeAreaView, FlatList, StyleSheet, Text, View, TextInput, Button } from 'react-native';
-import TaskItem from '@/components/TaskItem';
+import ListItem from '@/components/ListItem';
 import { ThemedText } from '@/components/ThemedText';
 import { TasksContext, Task } from '@/app/(tabs)/TasksProvider';
 import { ThemedView } from '@/components/ThemedView';
@@ -34,13 +34,11 @@ export default function TasksScreen() {
   };
 
   const renderItem = ({ item }: { item: Task }) => (
-    <TaskItem task={item} onToggleTaskCompletion={handleToggleTaskCompletion} onDeleteTask={deleteTask} />
+    <ListItem task={item} onToggleTaskCompletion={handleToggleTaskCompletion} onDeleteTask={deleteTask}/>
+    // <TaskItem task={item} onToggleTaskCompletion={handleToggleTaskCompletion} onDeleteTask={deleteTask} />
   );
 
   return (
-    // <ParallaxScrollView
-    //   headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-    // >
     <SafeAreaView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
@@ -71,14 +69,13 @@ export default function TasksScreen() {
         Task marked as completed
       </Snackbar>
     </SafeAreaView>
-    // </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#999',
   },
   inputContainer: {
     flexDirection: 'row',

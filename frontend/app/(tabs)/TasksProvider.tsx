@@ -62,11 +62,13 @@ export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const toggleTaskCompletion = (taskId: string) => {
-    const updatedTasks = tasks.map(task =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
-    setTasks(updatedTasks);
-    saveTasks(updatedTasks);
+    setTimeout(() => {
+      const updatedTasks = tasks.map(task =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      );
+      setTasks(updatedTasks);
+      saveTasks(updatedTasks);
+    }, 100);
   };
 
   const deleteTask = (taskId: string) => {
