@@ -23,14 +23,14 @@ This project is a React Native application built using Expo. The task management
 
 ### 1. Install Node.js and npm, and clone the repo
 
-If you haven't already, download and install Node.js from [nodejs.org](https://nodejs.org/). npm is included with Node.js.
+If you haven't already, download and install Node.js.
 
 ### 2. Install Expo
 
 Install Expo and the Expo Go app (You can also run it in your computer sim if you want)
 You might need to make an Expo Go account, though this shouldn't take too long.
 
-Run `npm install` to download all dependencies
+Run `npm install` in the frontend folder to download all dependencies
 
 ### Run
 
