@@ -1,21 +1,19 @@
 import React, { useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
 import { CheckBox } from '@rneui/themed';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { FontAwesome } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Task } from '@/app/(tabs)/TasksProvider'
 
 interface TaskItemProps {
-    task: {
-      id: string;
-      description: string;
-      completed: boolean;
-    };
+    task: Task;
     onToggleTaskCompletion: (taskId: string) => void;
     onDeleteTask: (taskId: string) => void;
+    onEditTask: (task: Task) => void;
   }
 
-export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask }: TaskItemProps) {
+export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask, onEditTask }: TaskItemProps) {
     const swipeRight = (progress: Animated.AnimatedInterpolation<number>, 
         dragX: Animated.AnimatedInterpolation<number>) =>{
         const scale = dragX.interpolate({
@@ -41,7 +39,8 @@ export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask }:
                     }
                 }}
         >
-            <Animated.View style={{flex:1,flexDirection:'row', height:70, alignItems:'center',borderBottomWidth:1,backgroundColor:'white'}}>
+          <TouchableOpacity onPress={() => onEditTask(task)}>
+            <Animated.View style={{flex:1,flexDirection:'row', height:70, alignItems:'center',backgroundColor:'white'}}>
                 <View style={styles.taskContainer}>
                     <CheckBox
                         checked={task.completed}
@@ -57,6 +56,7 @@ export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask }:
                     </Text>
                 </View>
             </Animated.View>
+            </TouchableOpacity>
         </Swipeable>
         </GestureHandlerRootView>
     );
@@ -67,8 +67,8 @@ export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask }:
       flexDirection: 'row',
       alignItems: 'center',
       padding: 0,
-      borderBottomColor: '#ddd',
-      borderBottomWidth: 1,
+      // borderBottomColor: '#ddd',
+      // borderBottomWidth: 1,
     },
     taskDescription: {
       marginLeft: 0,

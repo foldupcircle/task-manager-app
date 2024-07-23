@@ -12,6 +12,7 @@ interface TasksContextProps {
   addTask: (description: string) => void;
   toggleTaskCompletion: (taskId: string) => void;
   deleteTask: (taskId: string) => void;
+  updateTask: (taskId: string, newDescription: string) => void;
 }
 
 const defaultValue: TasksContextProps = {
@@ -19,6 +20,7 @@ const defaultValue: TasksContextProps = {
     addTask: () => {},
     toggleTaskCompletion: () => {},
     deleteTask: () => {},
+    updateTask: () => {},
   };
 
 export const TasksContext = createContext<TasksContextProps>(defaultValue);
@@ -77,8 +79,16 @@ export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     saveTasks(updatedTasks);
   };
 
+  const updateTask = (taskId: string, newDescription: string) => {
+    const updatedTasks = tasks.map(task =>
+      task.id === taskId ? { ...task, description: newDescription } : task
+    );
+    setTasks(updatedTasks);
+    saveTasks(updatedTasks);
+  };
+
   return (
-    <TasksContext.Provider value={{ tasks, addTask, toggleTaskCompletion, deleteTask }}>
+    <TasksContext.Provider value={{ tasks, addTask, toggleTaskCompletion, deleteTask, updateTask }}>
       {children}
     </TasksContext.Provider>
   );
