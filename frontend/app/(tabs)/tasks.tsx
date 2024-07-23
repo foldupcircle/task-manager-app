@@ -1,24 +1,31 @@
 import React, { useState, useContext } from 'react';
-import { SafeAreaView, FlatList, StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { SafeAreaView, FlatList, StyleSheet, View, TextInput, Text, TouchableOpacity } from 'react-native';
 import ListItem from '@/components/ListItem';
 import { ThemedText } from '@/components/ThemedText';
 import { TasksContext, Task } from '@/app/(tabs)/TasksProvider';
 import { ThemedView } from '@/components/ThemedView';
 import { Snackbar } from 'react-native-paper';
 import EditTaskModal from '@/components/EditTaskModal';
+import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 export default function TasksScreen() {
   const { tasks, addTask, toggleTaskCompletion, deleteTask, updateTask } = useContext(TasksContext);
-  const [newTaskDescription, setNewTaskDescription] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskDescription, setNewTaskDescription] = useState<string | null>('');
+  const [newTaskDueDate, setNewTaskDueDate] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
   const [lastToggledTask, setLastToggledTask] = useState<Task>();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const handleAddTask = () => {
-    if (newTaskDescription.trim() === '') return;
-    addTask(newTaskDescription);
+    if (newTaskTitle.trim() === '') return;
+    addTask(newTaskTitle, newTaskDueDate?.toString() || null, newTaskDescription || null);
+    setNewTaskTitle('');
     setNewTaskDescription('');
+    setNewTaskDueDate(null);
   };
 
   const handleToggleTaskCompletion = (taskId: string) => {
@@ -39,34 +46,67 @@ export default function TasksScreen() {
     setSelectedTask(task);
   };
 
-  const handleSaveTask = (taskId: string, newDescription: string) => {
-    updateTask(taskId, newDescription);
+  const handleSaveTask = (taskId: string, title: string, dueDate: string | null, description: string | null) => {
+    updateTask(taskId, title, dueDate, description);
     setSelectedTask(null);
   };
 
-  const renderItem = ({ item }: { item: Task }) => (
-    <ListItem task={item} onToggleTaskCompletion={handleToggleTaskCompletion} onDeleteTask={deleteTask} onEditTask={handleEditTask}/>
-    // <TaskItem task={item} onToggleTaskCompletion={handleToggleTaskCompletion} onDeleteTask={deleteTask} />
+  const groupTasksByDueDate = (tasks: Task[]) => {
+    const grouped: { [key: string]: Task[] } = {};
+    tasks.forEach(task => {
+      const dateKey = task.dueDate ? new Date(task.dueDate).toDateString() : 'No Due Date';
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(task);
+    });
+    return grouped;
+  };
+  // .filter(task => !task.completed)
+  const groupedTasks = groupTasksByDueDate(tasks);
+
+  const renderGroup = ({ item }: { item: [string, Task[]] }) => (
+    <View>
+      <ThemedText type="subtitle" style={styles.dateBanner}>{item[0]}</ThemedText>
+      {item[1].map(task => (
+        <ListItem
+          key={task.id}
+          task={task}
+          onToggleTaskCompletion={handleToggleTaskCompletion}
+          onDeleteTask={deleteTask}
+          onEditTask={handleEditTask}
+        />
+      ))}
+    </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Your Tasks!</ThemedText>
+        <ThemedText type="title" lightColor='#fff'>Your Tasks!</ThemedText>
       </ThemedView>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="New Task"
-          value={newTaskDescription}
-          onChangeText={setNewTaskDescription}
+          placeholder="New Task Title"
+          value={newTaskTitle}
+          onChangeText={setNewTaskTitle}
         />
-        <Button title="Add" onPress={handleAddTask} />
+        <TextInput
+          style={styles.input}
+          placeholder="New Task Description"
+          value={newTaskDescription || ''}
+          onChangeText={setNewTaskDescription}
+          multiline
+        />
+        <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
+          <Ionicons name="add-circle-outline" size={36} color="#6200EE" />
+        </TouchableOpacity>
       </View>
       <FlatList
-        data={tasks.filter(task => !task.completed)}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
+        data={Object.entries(groupedTasks)}
+        renderItem={renderGroup}
+        keyExtractor={item => item[0]}
       />
       <Snackbar
         visible={snackbarVisible}
@@ -121,7 +161,17 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#6200EE',
   },
+  dateBanner: {
+    backgroundColor: '#E0E0E0',
+    padding: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   snackbar: {
     backgroundColor: '#6200EE',
-  }
+  },
+  addButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 10,
+  },
 });

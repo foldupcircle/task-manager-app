@@ -13,7 +13,8 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-      }}>
+      }}
+      >
       <Tabs.Screen
         name="index"
         options={{
@@ -32,6 +33,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="completed-tasks"
+        options={{
+          title: 'Completed Tasks',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
+          ),
+        }}
+      />
       
     </Tabs>
   );
@@ -46,4 +56,3 @@ export default function TabLayout() {
           ),
         }}
       /> */}
-      
