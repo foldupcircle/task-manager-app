@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Definition of a Task
 export interface Task {
   id: string;
   title: string;
@@ -9,6 +10,7 @@ export interface Task {
   description: string | null;
 }
 
+// Task Functions and Task List
 interface TasksContextProps {
   tasks: Task[];
   addTask: (title: string, dueDate: string | null, description: string | null) => void;
@@ -34,6 +36,7 @@ export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     loadTasks();
   }, []);
 
+  // Load Tasks from Storage
   const loadTasks = async () => {
     try {
       const savedTasks = await AsyncStorage.getItem('tasks');
@@ -45,6 +48,7 @@ export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Save Tasks to Storage
   const saveTasks = async (tasks: Task[]) => {
     try {
       await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
@@ -53,6 +57,7 @@ export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Add Task to task list and save them
   const addTask = (title: string, dueDate: string | null, description: string | null) => {
     const newTask = {
       id: Date.now().toString(),
@@ -62,11 +67,12 @@ export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       description,
   };
 
-  const updatedTasks = [newTask, ...tasks].sort((a, b) => (a.dueDate && b.dueDate ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime() : 0));
+    const updatedTasks = [newTask, ...tasks].sort((a, b) => (a.dueDate && b.dueDate ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime() : 0));
     setTasks(updatedTasks);
     saveTasks(updatedTasks);
   };
 
+  // Handles checking the checkbox
   const toggleTaskCompletion = (taskId: string) => {
     setTimeout(() => {
       const updatedTasks = tasks.map(task =>
@@ -77,12 +83,14 @@ export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, 100);
   };
 
+  // Handles Task Deletion
   const deleteTask = (taskId: string) => {
     const updatedTasks = tasks.filter(task => task.id !== taskId).sort((a, b) => (a.dueDate && b.dueDate ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime() : 0));
     setTasks(updatedTasks);
     saveTasks(updatedTasks);
   };
 
+  // Handles Editing Task After Task has already been created
   const updateTask = (taskId: string, title: string, dueDate: string | null, description: string | null) => {
     const updatedTasks = tasks.map(task =>
       task.id === taskId ? { ...task, title, dueDate, description } : task

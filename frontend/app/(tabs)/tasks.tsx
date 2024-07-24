@@ -20,6 +20,7 @@ export default function TasksScreen() {
   const [lastToggledTask, setLastToggledTask] = useState<Task>();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
+  // Handling the addition of a task
   const handleAddTask = () => {
     if (newTaskTitle.trim() === '') return;
     addTask(newTaskTitle, newTaskDueDate?.toString() || null, newTaskDescription || null);
@@ -28,6 +29,7 @@ export default function TasksScreen() {
     setNewTaskDueDate(null);
   };
 
+  // Handling marking a task complete
   const handleToggleTaskCompletion = (taskId: string) => {
     const task = tasks.find(task => task.id === taskId);
     setLastToggledTask(task);
@@ -35,6 +37,7 @@ export default function TasksScreen() {
     setSnackbarVisible(true);
   };
 
+  // Handling task undo on popup
   const handleUndo = () => {
     if (lastToggledTask) {
       toggleTaskCompletion(lastToggledTask.id);
@@ -42,15 +45,18 @@ export default function TasksScreen() {
     }
   };
 
+  // Handling Edit Modal Cancel Button
   const handleEditTask = (task: Task) => {
     setSelectedTask(task);
   };
 
+  // Handling Edit Modal Save Button
   const handleSaveTask = (taskId: string, title: string, dueDate: string | null, description: string | null) => {
     updateTask(taskId, title, dueDate, description);
     setSelectedTask(null);
   };
 
+  // Grouping Tasks by Date and Rendering Them with the ListItem Component
   const groupTasksByDueDate = (tasks: Task[]) => {
     const grouped: { [key: string]: Task[] } = {};
     tasks.forEach(task => {
@@ -82,9 +88,13 @@ export default function TasksScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      {/* Title */}
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title" lightColor='#fff'>Your Tasks!</ThemedText>
       </ThemedView>
+
+      {/* Add Task Bar */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -103,6 +113,8 @@ export default function TasksScreen() {
           <Ionicons name="add-circle-outline" size={36} color="#6200EE" />
         </TouchableOpacity>
       </View>
+
+      {/* Task List */}
       <FlatList
         data={Object.entries(groupedTasks)}
         renderItem={renderGroup}
@@ -119,6 +131,8 @@ export default function TasksScreen() {
         style={styles.snackbar}
       >
         Task marked as completed
+
+      {/* Popup after Task is Completed */}
       </Snackbar>
       {selectedTask && (
         <EditTaskModal
