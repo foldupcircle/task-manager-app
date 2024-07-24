@@ -24,6 +24,7 @@ export default function EditTaskModal({ visible, task, onClose, onSave }: EditTa
     setDueDate(task.dueDate ? new Date(task.dueDate) : null);
     }, [task]);
 
+    // Save Edits Made
     const handleSave = () => {
     onSave(task.id, title, dueDate?.toISOString() || null, description);
     onClose();
@@ -33,13 +34,18 @@ export default function EditTaskModal({ visible, task, onClose, onSave }: EditTa
         <Modal visible={visible} animationType="slide" transparent={true}>
             <View style={styles.modalContainer}>
             <ThemedView style={styles.card}>
+                {/* Modal Title */}
                 <ThemedText type="title">Edit Task</ThemedText>
+
+                {/* Task Title Text Input */}
                 <TextInput
                 style={styles.input}
                 value={title}
                 onChangeText={setTitle}
                 placeholder="Title"
                 />
+
+                {/* Description Text Input */}
                 <TextInput
                 style={styles.input}
                 value={description || ''}
@@ -47,6 +53,8 @@ export default function EditTaskModal({ visible, task, onClose, onSave }: EditTa
                 placeholder="Description"
                 multiline
                 />
+
+                {/* Button and Functionality to Set a Due Date for task */}
                 <Button title="Set Due Date" onPress={() => setShowDatePicker(true)} color="#6200EE" />
                 {showDatePicker && (
                 <DateTimePicker
@@ -60,6 +68,8 @@ export default function EditTaskModal({ visible, task, onClose, onSave }: EditTa
                     }}
                 />
                 )}
+
+                {/* Buttons for Saving or Canceling Changes */}
                 <Button title="Save" onPress={handleSave} color="#6200EE" />
                 <Button title="Cancel" onPress={onClose} color="#6200EE" />
             </ThemedView>

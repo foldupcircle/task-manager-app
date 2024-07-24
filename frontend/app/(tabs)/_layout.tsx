@@ -15,6 +15,7 @@ export default function TabLayout() {
         headerShown: false,
       }}
       >
+      {/* Ignore this Screen */}
       <Tabs.Screen
         name="index"
         options={{
@@ -33,6 +34,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      {/* Ignore this Screen */}
       <Tabs.Screen
         name="completed-tasks"
         options={{

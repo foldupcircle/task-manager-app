@@ -14,7 +14,9 @@ interface TaskItemProps {
   }
 
 export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask, onEditTask }: TaskItemProps) {
-    const swipeRight = (progress: Animated.AnimatedInterpolation<number>, 
+    
+  // Handles View when swiping right
+  const swipeRight = (progress: Animated.AnimatedInterpolation<number>, 
         dragX: Animated.AnimatedInterpolation<number>) =>{
         const scale = dragX.interpolate({
             inputRange:[-1,0],
@@ -31,7 +33,9 @@ export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask, o
     }
     
     return(
+        // Required for Swipeable component
         <GestureHandlerRootView style={{flex: 1}}>
+            {/* Swipeable component that enables ListItem to be swiped, calls delete function */}
             <Swipeable renderRightActions={swipeRight} leftThreshold={-10}
                 onSwipeableOpen={(direction) => {
                     if (direction === "right") {
@@ -39,9 +43,12 @@ export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask, o
                     }
                 }}
             >
+                {/* This whole thing is clickable to edit the task */}
                 <TouchableOpacity onPress={() => onEditTask(task)}>
                     <Animated.View style={styles.taskItem}>
                         <View style={styles.taskContainer}>
+
+                            {/* Checkbox */}
                             <CheckBox
                                 checked={task.completed}
                                 onPress={() => onToggleTaskCompletion(task.id)}
@@ -51,6 +58,8 @@ export default function ListItem({ task, onToggleTaskCompletion, onDeleteTask, o
                                 checkedColor="black"
                                 size={30}
                             />
+
+                            {/* Task Title and Description */}
                             <View style={styles.taskTextContainer}>
                                 <Text style={[styles.taskTitle, task.completed && styles.completedTask]}>
                                     {task.title}
